@@ -191,6 +191,41 @@ describe('metalsmith-i18next', function(){
 		}
 	))
 
+	it('should omit locale for fallback locale', metalsmithTest(
+		{
+			pattern: '**/*.hamlc',
+			locales: ['en','fr'],
+			nsPath: './examples/locales/__lng__/__ns__.json',
+			namespaces: ['translations'],
+			fallbackLng: 'en',
+			omitFallbackLng: true
+		},
+		function(files) {
+
+			var enFile = files['index.txt'],
+				frFile = files['fr/index.txt']
+
+			should.exist(enFile)
+			should.exist(frFile)
+
+			enFile.contents.toString('utf8').should.equal('Hello John Doe')
+			frFile.contents.toString('utf8').should.equal('Bonjour John Doe')
+
+			should.exist(enFile.i18nBootstrap)
+			should.exist(frFile.i18nBootstrap)
+
+			should.exist(enFile.i18nOrigPath)
+			should.exist(frFile.i18nOrigPath)
+
+			should.exist(enFile.i18nResStore)
+			should.exist(frFile.i18nResStore)
+
+			enFile.i18nResStore.should.eql({en: {translations: {common:{foo:'Foo!!!'}, home: {hello: 'Hello __name__'}},foo:{foo:{bar:'Foobar'}}}})
+			frFile.i18nResStore.should.eql({fr: {translations: {common:{foo:'Fou!!!'}, home: {hello: 'Bonjour __name__'}},foo:{foo:{bar:'Foobar!!'}}}})
+		}
+	))
+
+
 	it('should create both index-en.txt and index-fr.txt in the same directory', metalsmithTest(
 		{
 			pattern: '**/*.hamlc',
