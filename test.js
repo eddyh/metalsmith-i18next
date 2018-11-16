@@ -293,4 +293,29 @@ describe('metalsmith-i18next', function(){
 			enFile.tpath('/toto.txt','fr').should.equal('/fr/toto.txt')
 		}
 	))
+
+	it('should allow tpath to omit fallback locale', metalsmithTest(
+		{
+			pattern: '**/*.hamlc',
+			locales: ['en','fr'],
+			nsPath: './examples/locales/__lng__/__ns__.json',
+			namespaces: ['translations'],
+			fallbackLng: 'en',
+			omitFallbackLng: true
+		},
+		function(files) {
+
+			var enFile = files['index.txt']
+			var frFile = files['fr/index.txt']
+
+			should.exist(enFile)
+			should.exist(frFile)
+
+			enFile.tpath('/toto.txt').should.equal('/toto.txt')
+			enFile.tpath('/toto.txt','fr').should.equal('/fr/toto.txt')
+
+			frFile.tpath('/toto.txt').should.equal('/fr/toto.txt')
+			frFile.tpath('/toto.txt','en').should.equal('/toto.txt')
+		}
+	))
 })
